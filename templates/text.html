@@ -1,0 +1,12 @@
+{% extends 'layout.html' %}
+
+{% block body %}
+<div class="jumbotron text-center">
+    <h1>FlaskApp</h1> 
+    <p class="lead">Simple webapp to demonstrate text similarity functions.</p>
+    <h1>HELLO</h1>
+    {% for i in test %}
+    <li>{{i[0][0] + ' | ' + i[0][1][:-1]}}</li>
+    {% endfor %}
+</div>
+{% endblock %}
