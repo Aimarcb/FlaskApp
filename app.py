@@ -1,8 +1,28 @@
 from flask import Flask, jsonify, render_template
- 
 import json
+
  
 app = Flask(__name__)
+
+
+def readAgenda():
+    agenda = []
+    filepath = "data/agenda.csv"
+    with open(filepath, 'r') as csv:
+        line = csv.readline()                       # "Aimar, 345"
+        while line:
+            line = csv.readline()
+
+            # Guardamos en la agenda la línea dividiendo por ','
+            
+            #contacto = line.split(',')          #["Aimar", 345]    # agenda = [ ["Javier", 123] ]
+            if (line):
+                agenda.append(line.split(','))        # agenda = [ ["Javier", 123], ["Aimar", 345], ["Alvaro", 543] ]
+
+    return agenda
+
+agenda = readAgenda()
+
 
 @app.route('/')
 def index():
@@ -25,25 +45,11 @@ def text():
 
 @app.route("/api/get_user/<user>")
 def getUser(user):
-    agenda = []
-
     """
     Javier, 123
     Aimar, 345
     Alvaro, 543
     """
-
-    filepath = "data/agenda.csv"
-    with open(filepath, 'r') as csv:
-        line = csv.readline()               # "Aimar, 345"
-        while line:
-            #contact = line.split (',', 2)
-            line = csv.readline()
-            # Guardamos en la agenda la línea dividiendo por ','
-            contacto = line.split(',',2)              #["Aimar", 345]    # agenda = [ ["Javier", 123] ]
-
-            agenda.append(line.split(',',2))         # agenda = [ ["Javier", 123], ["Aimar", 345], ["Alvaro", 543] ]
-
 
     for contacto in agenda:
         if user == contacto[0]:
@@ -51,6 +57,18 @@ def getUser(user):
 
     return jsonify(user=user, error="User not found."), 404
 
+
+@app.route("/api/get_adults/") 
+def getAdults():
+    adults = []
+
+    for contacto in agenda:
+        year = int(contacto[2].split('-')[0])
+
+        if year <= 2003 :
+            adults.append( [contacto[0], contacto[2]] )
+            
+    return jsonify(adults)
 
 
 if __name__ == '__main__':
