@@ -1,5 +1,6 @@
 from flask import Flask, jsonify, render_template
 import json
+import pandas
 from User import Contact
  
 app = Flask(__name__)
@@ -66,6 +67,9 @@ def getAdults():
     
     return json.dumps(adults, default=lambda x : x.__dict__)
 
+@app.route("api/nlp/<texto>")
+def text_processing():
+    pass
 
 if __name__ == '__main__':
     app.run(port=5002, debug=True, host='0.0.0.0')

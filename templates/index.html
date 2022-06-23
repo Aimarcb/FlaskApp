@@ -5,4 +5,63 @@
     <h1>Welcome to FlaskApp</h1> 
     <p class="lead">Simple webapp to demonstrate text similarity functions.</p>   
 </div>
+
+<a id="download">Download</a>
+<button id="stop">Stop</button>
+<button id="record">Record</button>
+
+<script>
+    const downloadLink  = document.getElementById('download');
+    const recordButton  = document.getElementById('record');
+    const stopButton    = document.getElementById('stop');
+    
+    
+    const handleSuccess = function(stream) {
+        const options = { mimeType: 'audio/webm' };
+        let recordedChunks = [];
+        const mediaRecorder = new MediaRecorder(stream, options);
+        
+        mediaRecorder.addEventListener('dataavailable', function(e) {
+            if (e.data.size > 0) recordedChunks.push(e.data);
+        });
+        
+        mediaRecorder.addEventListener('stop', function() {
+            onModelUpload(new Blob(recordedChunks));
+            downloadLink.href = URL.createObjectURL(new Blob(recordedChunks));
+            console.log(downloadLink.href)
+            downloadLink.download = 'acetest.wav';
+        });
+        
+        recordButton.addEventListener('click', () => {
+            recordedChunks = [];
+            mediaRecorder.start();
+            console.log("Hi");
+        });
+
+        stopButton.addEventListener('click', function() {
+            mediaRecorder.stop();
+        });
+    };
+    
+    navigator.mediaDevices.getUserMedia({ audio: true, video: false }).then(handleSuccess);
+
+    function onModelUpload(recording_blob) {
+        let formData = new FormData();
+        formData.append('audio', recording_blob);   
+        
+        console.log(formData)
+
+        const request = new XMLHttpRequest();
+        request.open('POST', './api/audio_post', true);
+        
+        request.onload = function () {  
+            console.log(formData)
+
+            console.log(this.response)
+        }
+        
+        request.send(formData);
+    }
+</script>
+
 {% endblock %}
